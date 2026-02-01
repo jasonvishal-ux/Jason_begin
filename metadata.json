@@ -1,0 +1,7 @@
+{
+  "name": "PhysiCalc Pro",
+  "description": "A high-performance scientific calculator integrated with a specialized fluid dynamics engine and Gemini-powered AI physics assistant.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
