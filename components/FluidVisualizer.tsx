@@ -18,7 +18,7 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
     if (!ctx) return;
 
     let particles: any[] = [];
-    const particleCount = 60; // More particles for smoother feel
+    const particleCount = 60;
 
     const initParticles = () => {
       particles = [];
@@ -36,7 +36,6 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
     initParticles();
 
     const draw = () => {
-      // Trail effect: instead of clearing fully, draw a semi-transparent overlay
       ctx.fillStyle = 'rgba(2, 6, 23, 0.3)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
@@ -44,11 +43,14 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
       const h = canvas.height;
       const padding = 20;
 
+      // Get computed primary color for the skin
+      const rootStyle = getComputedStyle(document.documentElement);
+      const primaryColor = `rgb(${rootStyle.getPropertyValue('--primary')})`;
+      const accentColor = `rgb(${rootStyle.getPropertyValue('--accent')})`;
+
       if (type === 'reynolds') {
         const pipeH = 70;
         const pipeY = h / 2 - pipeH / 2;
-        
-        // Draw Pipe Borders
         ctx.strokeStyle = 'rgba(255,255,255,0.1)';
         ctx.lineWidth = 2;
         ctx.strokeRect(padding, pipeY, w - padding * 2, pipeH);
@@ -60,18 +62,15 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
 
         particles.forEach(p => {
           p.x += speed;
-          // Loop with padding safety
           if (p.x > w - padding - 5) {
              p.x = padding + 5;
              p.y = pipeY + Math.random() * pipeH;
           }
-          
-          // Clamp Y to pipe interior
           const jitter = (Math.random() - 0.5) * turbulence;
           const baseY = p.y;
           const finalY = Math.max(pipeY + 2, Math.min(pipeY + pipeH - 2, baseY + jitter));
           
-          ctx.fillStyle = re > 4000 ? '#fb7185' : (re > 2300 ? '#fbbf24' : '#34d399');
+          ctx.fillStyle = re > 4000 ? '#fb7185' : (re > 2300 ? '#fbbf24' : accentColor);
           ctx.beginPath();
           ctx.arc(p.x, finalY, p.size, 0, Math.PI * 2);
           ctx.fill();
@@ -83,7 +82,6 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
         const v1 = Math.max(0.2, parseFloat(inputs.v1 || '1'));
         const v2 = (parseFloat(inputs.a1 || '1') * v1) / parseFloat(inputs.a2 || '1');
 
-        // Draw Pipe Shape
         ctx.beginPath();
         ctx.moveTo(0, h/2 - a1);
         ctx.lineTo(w/2, h/2 - a1);
@@ -91,25 +89,19 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
         ctx.lineTo(w, h/2 + a2);
         ctx.lineTo(w/2, h/2 + a1);
         ctx.lineTo(0, h/2 + a1);
-        ctx.strokeStyle = 'rgba(129, 140, 248, 0.3)';
+        ctx.strokeStyle = `rgba(${rootStyle.getPropertyValue('--primary')}, 0.3)`;
         ctx.stroke();
 
         particles.forEach(p => {
           const isLeft = p.x < w/2;
           const currentSpeed = isLeft ? v1 : v2;
           p.x += Math.min(currentSpeed * 3, 15);
-          
           if (p.x > w) p.x = 0;
-
-          // Boundary Math
           const xProgress = Math.max(0, (p.x - w/2) / (w/2));
           const currentHalfWidth = isLeft ? a1 : a1 + (a2 - a1) * xProgress;
-          
-          // Normalize p.y to a ratio of the pipe width to keep it steady
           if (p.ratio === undefined) p.ratio = (Math.random() - 0.5) * 1.8;
           const yPos = h/2 + (p.ratio * currentHalfWidth);
-
-          ctx.fillStyle = '#818cf8';
+          ctx.fillStyle = primaryColor;
           ctx.globalAlpha = p.alpha;
           ctx.beginPath();
           ctx.arc(p.x, yPos, p.size, 0, Math.PI * 2);
@@ -121,37 +113,28 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
         const depth = Math.min(parseFloat(inputs.h || '10'), 50);
         const tankW = w / 2;
         const tankX = w / 4;
-        
-        // Fluid Gradient
         const grad = ctx.createLinearGradient(0, padding, 0, h - padding);
         grad.addColorStop(0, 'rgba(30, 41, 59, 0.5)');
-        grad.addColorStop(1, 'rgba(30, 27, 75, 0.8)');
+        grad.addColorStop(1, `rgba(${rootStyle.getPropertyValue('--primary')}, 0.2)`);
         ctx.fillStyle = grad;
         ctx.fillRect(tankX, padding, tankW, h - padding * 2);
         ctx.strokeStyle = 'rgba(255,255,255,0.1)';
         ctx.strokeRect(tankX, padding, tankW, h - padding * 2);
-
-        // Marker for Depth
         const markerY = padding + Math.min(depth * 3, h - padding * 3);
         ctx.strokeStyle = '#f43f5e';
-        ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
         ctx.beginPath();
         ctx.moveTo(tankX - 10, markerY);
         ctx.lineTo(tankX + tankW + 10, markerY);
         ctx.stroke();
         ctx.setLineDash([]);
-
         ctx.fillStyle = '#f43f5e';
         ctx.font = 'bold 9px Inter';
         ctx.fillText(`${depth}m`, tankX + tankW + 15, markerY + 3);
-
         particles.forEach(p => {
           p.y -= 0.8;
-          // Clamp inside tank
           if (p.y < padding + 2) p.y = h - padding - 5;
           if (p.x < tankX + 5 || p.x > tankX + tankW - 5) p.x = tankX + 5 + Math.random() * (tankW - 10);
-          
           ctx.strokeStyle = `rgba(255,255,255,${p.alpha * 0.5})`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -163,30 +146,23 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
         const pipeY = h / 2 - pipeH / 2;
         const v1 = parseFloat(inputs.v1 || '1');
         const v2 = parseFloat(inputs.v2 || '2');
-
         const grad = ctx.createLinearGradient(padding, 0, w - padding, 0);
-        const color1 = v1 > v2 ? 'rgba(244, 63, 94, 0.15)' : 'rgba(59, 130, 246, 0.15)';
-        const color2 = v1 > v2 ? 'rgba(59, 130, 246, 0.15)' : 'rgba(244, 63, 94, 0.15)';
+        const color1 = v1 > v2 ? 'rgba(244, 63, 94, 0.15)' : `rgba(${rootStyle.getPropertyValue('--primary')}, 0.15)`;
+        const color2 = v1 > v2 ? `rgba(${rootStyle.getPropertyValue('--primary')}, 0.15)` : 'rgba(244, 63, 94, 0.15)';
         grad.addColorStop(0, color1);
         grad.addColorStop(1, color2);
-        
         ctx.fillStyle = grad;
         ctx.fillRect(padding, pipeY, w - padding * 2, pipeH);
         ctx.strokeStyle = 'rgba(255,255,255,0.1)';
         ctx.strokeRect(padding, pipeY, w - padding * 2, pipeH);
-
         particles.forEach(p => {
           const speed = p.x < w / 2 ? Math.max(v1, 0.5) : Math.max(v2, 0.5);
           p.x += speed * 2;
-          
           if (p.x > w - padding - 5) {
             p.x = padding + 5;
             p.y = pipeY + Math.random() * pipeH;
           }
-
-          // Force stay in pipe
           const finalY = Math.max(pipeY + 2, Math.min(pipeY + pipeH - 2, p.y));
-
           ctx.fillStyle = '#fff';
           ctx.globalAlpha = p.alpha;
           ctx.beginPath();
@@ -204,10 +180,10 @@ const FluidVisualizer: React.FC<VisualizerProps> = ({ type, inputs, result }) =>
   }, [type, inputs, result]);
 
   return (
-    <div className="relative w-full h-56 bg-slate-950/40 rounded-[2rem] border border-white/10 overflow-hidden mb-6 group glow-indigo transition-all hover:border-white/20">
+    <div className="relative w-full h-56 bg-slate-950/40 rounded-[2rem] border border-white/10 overflow-hidden mb-6 group transition-all hover:border-white/20">
       <div className="absolute top-4 left-6 flex items-center gap-3 z-10">
-        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 animate-pulse" />
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">PHYS_ENGINE :: LIVE_FEED</span>
+        <div className="w-2.5 h-2.5 rounded-full bg-[rgb(var(--primary))] shadow-lg shadow-[rgb(var(--primary)/0.5)] animate-pulse transition-colors duration-500" />
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">PHYS_ENGINE :: SKIN_SYNC</span>
       </div>
       <canvas 
         ref={canvasRef} 

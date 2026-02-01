@@ -34,14 +34,14 @@ const AIAssistant: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[600px] w-full max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+    <div className="flex flex-col h-[600px] w-full max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl transition-all duration-500">
       <div className="bg-slate-800/50 p-4 border-b border-slate-700 flex items-center gap-3">
-        <div className="p-2 bg-indigo-600 rounded-xl">
+        <div className="p-2 bg-[rgb(var(--primary))] rounded-xl transition-colors duration-500">
           <Bot size={20} className="text-white" />
         </div>
         <div>
           <h3 className="text-white font-bold">Physics AI Consultant</h3>
-          <p className="text-xs text-slate-400">Powered by Gemini 3 Pro</p>
+          <p className="text-xs text-slate-400 font-medium">Powered by Gemini 3 Pro</p>
         </div>
       </div>
 
@@ -51,7 +51,7 @@ const AIAssistant: React.FC = () => {
       >
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-50">
-            <Sparkles size={48} className="text-indigo-500" />
+            <Sparkles size={48} className="text-[rgb(var(--primary))] transition-colors duration-500" />
             <div>
               <p className="text-white font-medium">Ask me anything about Physics!</p>
               <p className="text-sm text-slate-400">"Calculate the pressure drop in a 20m pipe..."</p>
@@ -65,14 +65,14 @@ const AIAssistant: React.FC = () => {
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                msg.role === 'user' ? 'bg-indigo-600' : 'bg-slate-700'
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-500 ${
+                msg.role === 'user' ? 'bg-[rgb(var(--primary))]' : 'bg-slate-700'
               }`}>
                 {msg.role === 'user' ? <User size={16} className="text-white" /> : <Bot size={16} className="text-white" />}
               </div>
-              <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
+              <div className={`p-4 rounded-2xl text-sm leading-relaxed transition-all duration-500 ${
                 msg.role === 'user' 
-                  ? 'bg-indigo-600 text-white' 
+                  ? 'bg-[rgb(var(--primary))] text-white shadow-lg shadow-[rgb(var(--primary)/0.1)]' 
                   : 'bg-slate-800 text-slate-200 border border-slate-700'
               }`}>
                 {msg.text}
@@ -85,7 +85,7 @@ const AIAssistant: React.FC = () => {
           <div className="flex justify-start">
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
-                <Loader2 size={16} className="text-indigo-400 animate-spin" />
+                <Loader2 size={16} className="text-[rgb(var(--primary))] animate-spin transition-colors duration-500" />
               </div>
               <div className="bg-slate-800 p-4 rounded-2xl border border-slate-700 flex items-center gap-2">
                 <span className="text-slate-400 text-sm">Thinking...</span>
@@ -103,12 +103,12 @@ const AIAssistant: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Describe your fluid dynamics problem..."
-            className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] transition-all"
           />
           <button
             onClick={handleSend}
             disabled={loading}
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white p-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
+            className="bg-[rgb(var(--primary))] hover:brightness-110 disabled:opacity-50 text-white p-3 rounded-xl transition-all shadow-lg shadow-[rgb(var(--primary)/0.2)] active:scale-95 duration-500"
           >
             <Send size={20} />
           </button>

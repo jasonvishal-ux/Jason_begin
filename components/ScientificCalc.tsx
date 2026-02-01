@@ -80,7 +80,7 @@ const ScientificCalc: React.FC<ScientificCalcProps> = ({ onNewResult }) => {
   ];
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-2xl border border-white/10 glow-indigo">
+    <div className="w-full max-w-lg mx-auto bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-2xl border border-white/10 shadow-[rgb(var(--primary)/0.05)] transition-all duration-500">
       <div className="mb-8 bg-slate-950/80 rounded-3xl p-8 min-h-[160px] flex flex-col justify-end items-end overflow-hidden border border-white/5 shadow-inner">
         <div 
           ref={scrollRef}
@@ -88,7 +88,7 @@ const ScientificCalc: React.FC<ScientificCalcProps> = ({ onNewResult }) => {
         >
           {display || '0'}
         </div>
-        <div className={`text-5xl font-bold font-mono-calc break-all text-right mt-3 transition-colors duration-300 ${error ? 'text-rose-500' : 'text-emerald-400'}`}>
+        <div className={`text-5xl font-bold font-mono-calc break-all text-right mt-3 transition-colors duration-500 ${error ? 'text-rose-500' : 'text-[rgb(var(--accent))]'}`}>
           {result || ' '}
         </div>
       </div>
@@ -113,7 +113,7 @@ const ScientificCalc: React.FC<ScientificCalcProps> = ({ onNewResult }) => {
         <CalculatorButton
           label={<Equal size={28} />}
           variant="accent"
-          className="col-span-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400"
+          className="col-span-3 transition-colors duration-500"
           onClick={calculate}
         />
       </div>

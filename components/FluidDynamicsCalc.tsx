@@ -65,7 +65,6 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
         if (re < 2300) regime = 'Laminar';
         else if (re < 4000) regime = 'Transitional';
         else regime = 'Turbulent';
-        // Fix: Add empty unit to keep return type consistent across formula results
         return { value: re.toFixed(2), unit: '', extra: `Regime: ${regime}` };
       }
     },
@@ -83,7 +82,6 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
         const { p1, v1, v2, rho } = vals;
         if (isNaN(p1) || isNaN(v1) || isNaN(v2) || isNaN(rho)) return null;
         const p2 = p1 + 0.5 * rho * (Math.pow(v1, 2) - Math.pow(v2, 2));
-        // Fix: Add empty extra to keep return type consistent across formula results
         return { value: p2.toFixed(2), unit: 'Pa', extra: '' };
       }
     },
@@ -100,7 +98,6 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
             const { a1, v1, a2 } = vals;
             if (!a1 || !v1 || !a2) return null;
             const v2 = (a1 * v1) / a2;
-            // Fix: Add empty extra to keep return type consistent across formula results
             return { value: v2.toFixed(3), unit: 'm/s', extra: '' };
         }
     },
@@ -116,13 +113,11 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
             const { rho, h } = vals;
             if (!rho || !h) return null;
             const p = rho * 9.80665 * h;
-            // Fix: Add empty extra to keep return type consistent across formula results
             return { value: p.toFixed(2), unit: 'Pa', extra: '' };
         }
     }
   };
 
-  // Initialize default units when formula changes
   useEffect(() => {
     const defaultUnits: Record<string, string> = {};
     formulas[activeFormula].fields.forEach(field => {
@@ -147,7 +142,6 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
 
       const res = formula.calculate(convertedInputs);
       if (res) {
-        // Fix: Property access is now safe because calculate results have a uniform structure
         const output = `${res.value} ${res.unit || ''} ${res.extra || ''}`;
         setResult(output);
         const logDetails = formula.fields.map(f => `${f.label}: ${inputs[f.id]} ${selectedUnits[f.id]}`).join(', ');
@@ -167,7 +161,7 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
             onClick={() => setActiveFormula(key)}
             className={`p-4 rounded-2xl flex flex-col items-center gap-2 transition-all border ${
               activeFormula === key 
-                ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20' 
+                ? 'bg-[rgb(var(--primary))] border-[rgb(var(--primary))] text-white shadow-lg shadow-[rgb(var(--primary)/0.2)]' 
                 : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800'
             }`}
           >
@@ -181,7 +175,7 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
         <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              {formulas[activeFormula].icon}
+              <span className="text-[rgb(var(--primary))]">{formulas[activeFormula].icon}</span>
               {formulas[activeFormula].name}
             </h2>
             <p className="text-slate-400 text-sm">{formulas[activeFormula].desc}</p>
@@ -197,13 +191,13 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
                     value={inputs[field.id] || ''}
                     onChange={(e) => setInputs({ ...inputs, [field.id]: e.target.value })}
                     placeholder={field.placeholder}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono-calc text-sm"
+                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] transition-all font-mono-calc text-sm"
                   />
                   <div className="relative">
                     <select
                       value={selectedUnits[field.id] || field.units[0]}
                       onChange={(e) => setSelectedUnits({ ...selectedUnits, [field.id]: e.target.value })}
-                      className="appearance-none bg-slate-800 border border-slate-700 rounded-xl px-3 pr-8 py-3 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer h-full"
+                      className="appearance-none bg-slate-800 border border-slate-700 rounded-xl px-3 pr-8 py-3 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] cursor-pointer h-full"
                     >
                       {field.units.map(u => (
                         <option key={u} value={u}>{u}</option>
@@ -218,16 +212,16 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
 
           <button
             onClick={handleRunCalc}
-            className="w-full mt-8 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
+            className="w-full mt-8 bg-[rgb(var(--primary))] hover:brightness-110 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[rgb(var(--primary)/0.2)] transition-all active:scale-95 duration-300"
           >
             <Calculator size={20} />
             Calculate
           </button>
 
           {result && (
-            <div className="mt-8 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
-              <span className="text-xs uppercase font-bold text-emerald-500 tracking-wider">Result (SI units)</span>
-              <div className="text-3xl font-bold text-emerald-400 font-mono-calc mt-1">
+            <div className="mt-8 p-6 bg-[rgb(var(--accent)/0.1)] border border-[rgb(var(--accent)/0.3)] rounded-2xl transition-all duration-500">
+              <span className="text-xs uppercase font-bold text-[rgb(var(--accent))] tracking-wider transition-colors duration-500">Result (SI units)</span>
+              <div className="text-3xl font-bold text-[rgb(var(--accent))] font-mono-calc mt-1 transition-colors duration-500">
                 {result}
               </div>
             </div>
@@ -237,7 +231,7 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <Waves size={16} className="text-indigo-400" />
+              <Waves size={16} className="text-[rgb(var(--primary))]" />
               Physical Visualization
             </h3>
             <FluidVisualizer 
@@ -246,7 +240,7 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
               result={result} 
             />
             <div className="text-xs text-slate-500 leading-relaxed italic bg-slate-950/30 p-4 rounded-xl border border-slate-800/50">
-              Note: The visualization represents physical behavior based on current input parameters. Changes in velocity or regime will update the particle flow density and pattern.
+              Note: The visualization represents physical behavior based on current parameters. Skin: <span className="text-[rgb(var(--primary))] capitalize">{document.body.getAttribute('data-theme')}</span>.
             </div>
           </div>
         </div>
