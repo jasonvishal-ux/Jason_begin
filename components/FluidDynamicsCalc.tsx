@@ -153,94 +153,98 @@ const FluidDynamicsCalc: React.FC<FluidDynamicsCalcProps> = ({ onNewResult }) =>
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-6xl mx-auto space-y-8 pb-12">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {(Object.keys(formulas) as Array<keyof typeof formulas>).map((key) => (
           <button
             key={key}
             onClick={() => setActiveFormula(key)}
-            className={`p-4 rounded-2xl flex flex-col items-center gap-2 transition-all border ${
+            className={`p-6 rounded-3xl flex flex-col items-center gap-3 transition-all border ${
               activeFormula === key 
-                ? 'bg-[rgb(var(--primary))] border-[rgb(var(--primary))] text-white shadow-lg shadow-[rgb(var(--primary)/0.2)]' 
-                : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800'
+                ? 'bg-[rgb(var(--primary))] border-[rgb(var(--primary))] text-white shadow-xl shadow-[rgb(var(--primary)/0.2)] scale-105' 
+                : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:bg-slate-800/80'
             }`}
           >
             {formulas[key].icon}
-            <span className="text-xs font-semibold text-center">{formulas[key].name}</span>
+            <span className="text-sm font-bold text-center">{formulas[key].name}</span>
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <span className="text-[rgb(var(--primary))]">{formulas[activeFormula].icon}</span>
-              {formulas[activeFormula].name}
-            </h2>
-            <p className="text-slate-400 text-sm">{formulas[activeFormula].desc}</p>
-          </div>
+      <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 rounded-[3rem] p-8 md:p-12 shadow-2xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div className="lg:col-span-5 space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <span className="text-[rgb(var(--primary))]">{formulas[activeFormula].icon}</span>
+                {formulas[activeFormula].name}
+              </h2>
+              <p className="text-slate-400 text-sm mt-1">{formulas[activeFormula].desc}</p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {formulas[activeFormula].fields.map((field) => (
-              <div key={field.id} className="space-y-2">
-                <label className="text-sm font-medium text-slate-300 block">{field.label}</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    value={inputs[field.id] || ''}
-                    onChange={(e) => setInputs({ ...inputs, [field.id]: e.target.value })}
-                    placeholder={field.placeholder}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] transition-all font-mono-calc text-sm"
-                  />
-                  <div className="relative">
-                    <select
-                      value={selectedUnits[field.id] || field.units[0]}
-                      onChange={(e) => setSelectedUnits({ ...selectedUnits, [field.id]: e.target.value })}
-                      className="appearance-none bg-slate-800 border border-slate-700 rounded-xl px-3 pr-8 py-3 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] cursor-pointer h-full"
-                    >
-                      {field.units.map(u => (
-                        <option key={u} value={u}>{u}</option>
-                      ))}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+            <div className="space-y-6">
+              {formulas[activeFormula].fields.map((field) => (
+                <div key={field.id} className="space-y-2">
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest block">{field.label}</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={inputs[field.id] || ''}
+                      onChange={(e) => setInputs({ ...inputs, [field.id]: e.target.value })}
+                      placeholder={field.placeholder}
+                      className="flex-1 bg-slate-950/80 border border-white/5 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] transition-all font-mono-calc text-sm"
+                    />
+                    <div className="relative">
+                      <select
+                        value={selectedUnits[field.id] || field.units[0]}
+                        onChange={(e) => setSelectedUnits({ ...selectedUnits, [field.id]: e.target.value })}
+                        className="appearance-none bg-slate-800 border border-white/5 rounded-2xl px-4 pr-10 py-4 text-xs font-bold text-slate-300 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))] cursor-pointer h-full min-w-[90px]"
+                      >
+                        {field.units.map(u => (
+                          <option key={u} value={u}>{u}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleRunCalc}
+              className="w-full bg-[rgb(var(--primary))] hover:brightness-110 text-white font-black py-5 rounded-2xl flex items-center justify-center gap-3 shadow-xl shadow-[rgb(var(--primary)/0.2)] transition-all active:scale-[0.98] duration-300"
+            >
+              <Calculator size={20} />
+              Run Solver
+            </button>
+
+            {result && (
+              <div className="p-8 bg-[rgb(var(--accent)/0.05)] border border-[rgb(var(--accent)/0.2)] rounded-3xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-2">
+                <span className="text-[10px] uppercase font-black text-[rgb(var(--accent))] tracking-[0.2em] transition-colors duration-500">Calculated Value (SI)</span>
+                <div className="text-4xl font-bold text-[rgb(var(--accent))] font-mono-calc mt-2 transition-colors duration-500">
+                  {result}
+                </div>
               </div>
-            ))}
+            )}
           </div>
 
-          <button
-            onClick={handleRunCalc}
-            className="w-full mt-8 bg-[rgb(var(--primary))] hover:brightness-110 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[rgb(var(--primary)/0.2)] transition-all active:scale-95 duration-300"
-          >
-            <Calculator size={20} />
-            Calculate
-          </button>
-
-          {result && (
-            <div className="mt-8 p-6 bg-[rgb(var(--accent)/0.1)] border border-[rgb(var(--accent)/0.3)] rounded-2xl transition-all duration-500">
-              <span className="text-xs uppercase font-bold text-[rgb(var(--accent))] tracking-wider transition-colors duration-500">Result (SI units)</span>
-              <div className="text-3xl font-bold text-[rgb(var(--accent))] font-mono-calc mt-1 transition-colors duration-500">
-                {result}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="bg-slate-950/40 rounded-[2.5rem] p-8 border border-white/5 h-full min-h-[500px] flex flex-col">
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.3em] mb-8 flex items-center gap-3">
+                <Waves size={18} className="text-[rgb(var(--primary))]" />
+                Dynamic Fluid Simulation
+              </h3>
+              <div className="flex-1 flex flex-col justify-center">
+                <FluidVisualizer 
+                  type={activeFormula} 
+                  inputs={inputs} 
+                  result={result} 
+                />
               </div>
-            </div>
-          )}
-        </div>
-
-        <div className="lg:col-span-5 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
-            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <Waves size={16} className="text-[rgb(var(--primary))]" />
-              Physical Visualization
-            </h3>
-            <FluidVisualizer 
-              type={activeFormula} 
-              inputs={inputs} 
-              result={result} 
-            />
-            <div className="text-xs text-slate-500 leading-relaxed italic bg-slate-950/30 p-4 rounded-xl border border-slate-800/50">
-              Note: The visualization represents physical behavior based on current parameters. Skin: <span className="text-[rgb(var(--primary))] capitalize">{document.body.getAttribute('data-theme')}</span>.
+              <div className="mt-8 text-[11px] text-slate-500 leading-relaxed italic bg-slate-800/20 p-5 rounded-2xl border border-white/5 text-center">
+                "The simulation updates in real-time as physical constraints are adjusted. Skin synchronization active."
+              </div>
             </div>
           </div>
         </div>

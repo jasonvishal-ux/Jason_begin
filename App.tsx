@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ScientificCalc from './components/ScientificCalc';
 import FluidDynamicsCalc from './components/FluidDynamicsCalc';
+import MechanicsCalc from './components/MechanicsCalc';
 import AIAssistant from './components/AIAssistant';
 import { TabType, HistoryItem } from './types';
 import { 
@@ -13,7 +14,8 @@ import {
   ChevronRight,
   CalculatorIcon,
   Palette,
-  X
+  X,
+  Box
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -55,6 +57,7 @@ const App: React.FC = () => {
   const navItems = [
     { id: 'scientific', label: 'Scientific', icon: <Calculator size={20} /> },
     { id: 'fluid', label: 'Fluid Dynamics', icon: <Droplets size={20} /> },
+    { id: 'mechanics', label: 'Mechanics', icon: <Box size={20} /> },
     { id: 'ai', label: 'AI Assistant', icon: <Bot size={20} /> },
   ];
 
@@ -68,13 +71,11 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row relative transition-colors duration-500">
-      {/* Decorative Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[rgb(var(--primary)/0.1)] rounded-full blur-[120px] animate-float transition-colors duration-700"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[rgb(var(--primary)/0.05)] rounded-full blur-[120px] animate-float transition-colors duration-700" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      {/* Sidebar Navigation */}
       <nav className="w-full md:w-24 lg:w-72 bg-slate-950/80 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/5 flex flex-col p-6 z-50">
         <div className="flex items-center gap-4 mb-10 px-2 md:justify-center lg:justify-start">
           <div className="w-12 h-12 bg-gradient-to-br from-[rgb(var(--primary))] to-[rgb(var(--primary)/0.6)] rounded-2xl flex items-center justify-center shadow-xl shadow-[rgb(var(--primary)/0.2)] group cursor-pointer transition-all hover:scale-110">
@@ -116,7 +117,6 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto relative pb-20 md:pb-0 z-10">
         <header className="sticky top-0 bg-slate-950/40 backdrop-blur-md z-40 border-b border-white/5 p-6 md:p-8">
           <div className="flex items-center justify-between max-w-6xl mx-auto">
@@ -139,7 +139,6 @@ const App: React.FC = () => {
                     <span className="hidden sm:inline">SKINS</span>
                 </button>
 
-                {/* Floating Skin Picker */}
                 {showSkinPicker && (
                   <div className="absolute top-14 right-0 w-64 bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl z-[60] animate-in fade-in zoom-in-95 duration-200">
                     <div className="flex items-center justify-between mb-5">
@@ -188,12 +187,12 @@ const App: React.FC = () => {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             {activeTab === 'scientific' && <ScientificCalc onNewResult={addToHistory} />}
             {activeTab === 'fluid' && <FluidDynamicsCalc onNewResult={addToHistory} />}
+            {activeTab === 'mechanics' && <MechanicsCalc onNewResult={addToHistory} />}
             {activeTab === 'ai' && <AIAssistant />}
           </div>
         </div>
       </main>
 
-      {/* Side History Panel */}
       {showHistory && (
         <div className="fixed inset-0 md:relative md:inset-auto z-[100] md:z-auto w-full md:w-80 lg:w-96 bg-slate-950/95 backdrop-blur-2xl border-l border-white/10 flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
           <div className="p-8 border-b border-white/5 flex items-center justify-between">
